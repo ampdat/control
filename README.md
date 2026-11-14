@@ -4,8 +4,9 @@
 
 Ampdat Control reads Ethereum mainnet and answers, for every covered contract:
 
-- who holds each role (owner, curator, guardian or sentinel, allocators) and what that holder is:
-  a single key, a Safe and its threshold, a DAO, or a known contract;
+- who holds each role (a vault's owner, curator, guardian and allocators; a coin's minters and
+  freezers; a Safe's owners) and what that holder is: a single key, a Safe and its threshold, a
+  DAO, or a known contract;
 - how much notice each kind of change gives (the timelock), and who can revoke it while it waits;
 - every change already queued, and when it can take effect.
 
@@ -17,7 +18,10 @@ Coverage is on Ethereum mainnet:
 
 - every Morpho vault (MetaMorpho v1.0 and v1.1, and Morpho Vaults V2);
 - the Safes that hold the vaults' roles;
-- the admin contracts of six stablecoins: USDC, USDT, USDS, DAI, PYUSD and USD1.
+- six stablecoins and their admin contracts: USDC, USDT, USDS, DAI, PYUSD and USD1.
+
+These are one picture, not three products. A vault's answer names the Safe that holds each role
+and the coin the vault is denominated in, and each of those has an answer of its own.
 
 The `get_coverage` tool and `GET /v1/coverage` list every covered family, with how many contracts
 each has.
@@ -67,7 +71,7 @@ More clients, including the Python SDK and MCP Inspector, are covered in
 | `get_coverage` | free | what is covered, and whether one address is |
 | `search_covered_contracts` | free | a covered contract's address from its name, asset symbol or part of its address |
 | `get_control_state` | free | who holds each role and what that holder is, the notice each change gives, and what is pending |
-| `get_control_evidence` | paid | the full evidence-backed answer: a Safe's signers and modules, exact caps and queues, and the transaction and log behind each pending change |
+| `get_control_evidence` | paid | the full evidence-backed answer: the whole control chain in one answer, exact caps and queues, and the transaction and log behind each pending change |
 | `get_change_records` | paid | one contract's change history, or the feed across all covered contracts |
 
 The inputs, the outputs and how each tool behaves are in [docs/tools.md](docs/tools.md).

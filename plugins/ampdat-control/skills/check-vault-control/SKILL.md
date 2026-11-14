@@ -85,12 +85,13 @@ signs or sends anything itself. If the user changes their mind, stop.
 
 `get_control_state` says what each role holder is. The evidence behind it is the paid answer:
 
-- `get_control_evidence`: who the signers of each Safe are, its modules and guard, EIP-7702
-  delegates, the exact caps and queues, and for every pending change the transaction and log it
-  rests on. Use it when the user wants to verify the answer or look behind a Safe, or is
+- `get_control_evidence`: the whole control chain in one answer (each Safe's owners, modules
+  and guard, EIP-7702 delegates), the exact caps and queues, and for every pending change the
+  transaction and log it rests on. Use it when the user wants to verify the answer, or is
   depositing an amount large enough to audit first.
-- `get_change_records`: the vault's history of changes, or the feed across all vaults. Use it
-  when the user asks what this curator has changed before, or wants to monitor a position.
+- `get_change_records`: the contract's history of changes, or the feed across all covered
+  contracts. Use it when the user asks what this curator has changed before, or wants to
+  monitor a position.
 
 Both are paid per call over x402 (USDC on Base). Called without a payment they charge nothing
 and return the price and the HTTP URL that sells the same answer
@@ -105,13 +106,17 @@ where it is, and do not guess at its contents.
 The same tools answer for two more kinds of contract. Read them out the same way, as facts:
 
 - **A stablecoin** (USDC, USDT, USDS, DAI, PYUSD or USD1). `roles` and `powers` say who can mint,
-  burn, pause, freeze, upgrade the contract or appoint those roles, and what each holder is. When
-  a vault's asset is one of these coins, offer to check the coin too: who controls the asset is
-  part of who controls the deposit.
+  burn, pause, freeze, upgrade the contract or appoint those roles, and what each holder is. A
+  vault's `depends_on` lists its asset when that is one of these coins. Offer to check the coin
+  too: who controls the asset is part of who controls the deposit.
 - **A Safe** that holds a vault role. The `summary` says how many owners must sign, whether
-  modules can act with no signature, and whether a guard can refuse a transaction.
-  `holds_roles_on` lists the vaults and roles it holds. A Safe changes in one transaction, so its
-  `pending` is always empty. That does not mean it cannot change.
+  modules can act with no signature, and whether a guard can refuse a transaction. `roles` lists
+  its owners, and `holds_roles_on` the vaults and roles it holds. A Safe changes in one
+  transaction, so its `pending` is always empty. That does not mean it cannot change.
+- **To look behind a Safe for free,** call `get_control_state` with the Safe's address: a
+  vault's answer names the Safe and its threshold, and the Safe's own answer names its owners.
+- `covered: false` with `part_of` means the address is one of a coin's other contracts. Call
+  `get_control_state` with the `part_of` address.
 
 ## Working beside Morpho's own tools
 
