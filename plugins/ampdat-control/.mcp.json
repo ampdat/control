@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ampdat-control": {
+      "type": "http",
+      "url": "https://control.ampdat.com/mcp"
+    }
+  }
+}

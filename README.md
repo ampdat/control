@@ -1,0 +1,106 @@
+# Ampdat Control
+
+**Who controls a DeFi contract, and what is about to change.**
+
+Ampdat Control reads Ethereum mainnet and answers, for every covered contract:
+
+- who holds each role (owner, curator, guardian or sentinel, allocators) and what that holder is:
+  a single key, a Safe and its threshold, a DAO, or a known contract;
+- how much notice each kind of change gives (the timelock), and who can revoke it while it waits;
+- every change already queued, and when it can take effect.
+
+Every answer is a fact read from the chain at a stated block. It is a title search, not a rating:
+it gives no safety score and no investment advice, and it never prepares, signs or sends a
+transaction.
+
+Coverage is on Ethereum mainnet:
+
+- every Morpho vault (MetaMorpho v1.0 and v1.1, and Morpho Vaults V2);
+- the Safes that hold the vaults' roles;
+- the admin contracts of six stablecoins: USDC, USDT, USDS, DAI, PYUSD and USD1.
+
+The `get_coverage` tool and `GET /v1/coverage` list every covered family, with how many contracts
+each has.
+
+> **Status.** The MCP endpoints below go live with the service's next deploy. Until then,
+> `https://control.ampdat.com/mcp` does not answer. The web pages and the HTTP API are live.
+
+This repository holds the documentation, the MCP Registry metadata, and a Claude Code plugin with
+the `check-vault-control` skill. The service itself is operated by Ampdat LLC and is not open
+source.
+
+## Connect
+
+The MCP server is remote: there is nothing to install, and no sign-in.
+
+| Endpoint | Tools |
+| --- | --- |
+| `https://control.ampdat.com/mcp` | three free tools and two paid ones |
+| `https://control.ampdat.com/free/mcp` | the three free tools only |
+
+**Claude (web, desktop, mobile):** Settings, Connectors, Add custom connector. Use the URL
+`https://control.ampdat.com/mcp` and leave the OAuth fields empty.
+
+**Claude Code:**
+
+```bash
+claude mcp add --transport http ampdat-control https://control.ampdat.com/mcp
+```
+
+Or install the plugin, which adds both the server and the skill. Run these inside Claude Code:
+
+```
+/plugin marketplace add ampdat/control
+/plugin install ampdat-control@ampdat
+```
+
+**ChatGPT (developer mode):** add a connector with the URL
+`https://control.ampdat.com/free/mcp` and "No authentication".
+
+More clients, including the Python SDK and MCP Inspector, are covered in
+[docs/connect.md](docs/connect.md).
+
+## Tools
+
+| Tool | Price | What it answers |
+| --- | --- | --- |
+| `get_coverage` | free | what is covered, and whether one address is |
+| `search_covered_contracts` | free | a covered contract's address from its name, asset symbol or part of its address |
+| `get_control_state` | free | who holds each role and what that holder is, the notice each change gives, and what is pending |
+| `get_control_evidence` | paid | the full evidence-backed answer: a Safe's signers and modules, exact caps and queues, and the transaction and log behind each pending change |
+| `get_change_records` | paid | one contract's change history, or the feed across all covered contracts |
+
+The inputs, the outputs and how each tool behaves are in [docs/tools.md](docs/tools.md).
+
+## Paying
+
+The two paid tools are paid per call in USDC on Base, using the
+[x402](https://www.x402.org/) protocol over MCP. If a call carries no payment, nothing is
+charged: it returns the price and the HTTP URL that sells the same answer.
+[docs/payments.md](docs/payments.md) explains how to pay from an assistant today.
+
+## The skill
+
+[`check-vault-control`](plugins/ampdat-control/skills/check-vault-control/SKILL.md) tells an
+assistant to check who controls a Morpho vault before a deposit, without being asked. It also
+covers questions about who controls a stablecoin or a Safe. It tells the assistant how to report
+the answer, and what it must never say. It works alongside
+Morpho's own MCP server (`https://mcp.morpho.org/`).
+
+You can use it in either of these ways:
+
+- Install the plugin above.
+- Copy the skill's folder to `~/.claude/skills/`, or upload it as a skill in claude.ai.
+
+## Also here
+
+- [docs/api.md](docs/api.md): the HTTP API, and the published JSON schemas.
+- [examples/prompts.md](examples/prompts.md): example prompts, with the tools each one calls.
+- [server.json](server.json): the MCP Registry entry (`com.ampdat/control`).
+- [docs/privacy-and-support.md](docs/privacy-and-support.md): what is logged, and how to reach us.
+
+## Licence
+
+The contents of this repository (the docs, the skill and the plugin) are under the
+[MIT licence](LICENSE). The service and its data are governed by its terms of service:
+<https://control.ampdat.com/terms>.
