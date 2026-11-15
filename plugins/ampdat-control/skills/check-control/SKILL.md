@@ -106,7 +106,9 @@ where it is, and do not guess at its contents.
 The same tools answer for two more kinds of contract. Read them out the same way, as facts:
 
 - **A stablecoin** (USDC, USDT, USDS, DAI, PYUSD or USD1). `roles` and `powers` say who can mint,
-  burn, pause, freeze, upgrade the contract or appoint those roles, and what each holder is. A
+  burn, pause, freeze, upgrade the contract or appoint those roles, and what each holder is.
+  Those are the token's own; `contracts` lists every contract of the coin with who holds each
+  capability, which is where the keys are when the token is owned by another contract. A
   vault's `depends_on` lists its asset when that is one of these coins. Offer to check the coin
   too: who controls the asset is part of who controls the deposit.
 - **A Safe** that holds a vault role. The `summary` says how many owners must sign, whether

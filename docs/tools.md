@@ -39,7 +39,7 @@ annotated `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`
 | Contract | `roles` and `powers` | Also |
 | --- | --- | --- |
 | A Morpho vault | owner, curator, guardian or sentinels, allocators; the notice each change gives | `subject.assets_held`. `depends_on` lists what the vault's funds rest on: its asset where that is a covered coin, and a Vaults V2 vault's adapters. A covered one has a `page` and an answer of its own |
-| A stablecoin | who can mint, burn, pause, freeze, upgrade the contract or appoint those roles | `subject.total_supply` (a coin has a supply, not assets held) |
+| A stablecoin | who can mint, burn, pause, freeze, upgrade the contract or appoint those roles | `subject.total_supply` (a coin has a supply, not assets held). `contracts`: every contract of the coin (the token, and for example USDC's MasterMinter or USD1's TokenGovernor), each with its capabilities and who holds them. `roles` and `powers` are the token's own, so read `contracts` for keys held one contract away |
 | A Safe | its owners (`safe_owner`) and modules; the `summary` gives the threshold and says whether a guard can refuse a transaction | `holds_roles_on`: the vaults and roles it holds. `pending` is always empty, because a Safe changes in one transaction |
 
 They connect. A vault's role holder may be a covered Safe, and its asset a covered coin:

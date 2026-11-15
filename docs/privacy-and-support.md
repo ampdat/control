@@ -1,5 +1,7 @@
 # Privacy and support
 
+The same text is served at <https://control.ampdat.com/privacy>.
+
 ## Privacy
 
 The terms of service at <https://control.ampdat.com/terms> govern this section; if the two ever
