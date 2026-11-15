@@ -1,5 +1,5 @@
 ---
-name: check-vault-control
+name: check-control
 description: Check who controls a Morpho vault before depositing. Use when the user is about to deposit into, is considering, or already holds a Morpho vault (MetaMorpho v1.0 or v1.1, or Morpho Vaults V2) on Ethereum, or asks who controls, owns or curates a vault, who can change its terms, how long its timelock is, who can veto, or what changes are pending. Looks up the vault's role holders (a single key, a Safe and its threshold, a DAO), the notice each change gives and every queued change with Ampdat Control, and reports them as facts with the block they are as of. Also use it when the user asks who can mint, freeze, pause or upgrade a major stablecoin (USDC, USDT, USDS, DAI, PYUSD, USD1), or who controls a Safe that holds a vault role. A title search, not a rating - it never produces a safety score or investment advice.
 ---
 
@@ -115,8 +115,11 @@ The same tools answer for two more kinds of contract. Read them out the same way
   transaction, so its `pending` is always empty. That does not mean it cannot change.
 - **To look behind a Safe for free,** call `get_control_state` with the Safe's address: a
   vault's answer names the Safe and its threshold, and the Safe's own answer names its owners.
-- `covered: false` with `part_of` means the address is one of a coin's other contracts. Call
+- `covered: false` with `part_of` means the address belongs to a covered contract that is
+  answered at another address (today, one of a coin's other contracts). Call
   `get_control_state` with the `part_of` address.
+- More kinds of contract will be added. If an answer has a `kind`, a role or a field this page
+  does not describe, report it as given and do not guess at what it means.
 
 ## Working beside Morpho's own tools
 

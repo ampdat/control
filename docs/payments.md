@@ -37,7 +37,7 @@ tool on the HTTP route, `GET https://control.ampdat.com/v1/ethereum/<address>`. 
 An agent built on the x402 SDKs (for example `@x402/mcp` or the Python `x402` package) can pay
 the MCP tool directly.
 
-The `check-vault-control` skill tells an assistant to state the price and ask the user before
+The `check-control` skill tells an assistant to state the price and ask the user before
 paying, and never to pay on its own initiative.
 
 ## Prices

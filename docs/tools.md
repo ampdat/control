@@ -18,9 +18,10 @@ annotated `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`
   `search_covered_contracts`, then `get_control_state` with the address it returns.
 - **Uncovered addresses.** An address that is not covered is an answer, not an error:
   `{"covered": false, …}`. The result also says that this is not a finding about the contract,
-  good or bad. One case differs: an address that is one of a coin's other contracts (USDC's
-  MasterMinter, for example) returns `part_of` with the coin's address, because the coin's
-  answer covers it.
+  good or bad. One case differs: an address that belongs to a covered contract answered at
+  another address returns `part_of` with that address, whose answer covers it. Today that is
+  one of a coin's other contracts (USDC's MasterMinter, for example); a lending market's other
+  contracts will answer the same way.
 - **Malformed arguments.** These return an error that names the argument.
 - **Result size.** A free result is 1 to 5 KB. The full evidence answer can pass 50 KB; use
   `sections` to ask for only part of it.
@@ -41,8 +42,12 @@ annotated `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`
 | A stablecoin | who can mint, burn, pause, freeze, upgrade the contract or appoint those roles | `subject.total_supply` (a coin has a supply, not assets held) |
 | A Safe | its owners (`safe_owner`) and modules; the `summary` gives the threshold and says whether a guard can refuse a transaction | `holds_roles_on`: the vaults and roles it holds. `pending` is always empty, because a Safe changes in one transaction |
 
-The three connect. A vault's role holder may be a covered Safe, and its asset a covered coin:
+They connect. A vault's role holder may be a covered Safe, and its asset a covered coin:
 call `get_control_state` again with that address to follow the chain.
+
+More kinds will be added to this table (next, the lending markets and their governance), in the
+same tools and the same shape. `subject.kind` says which kind an answer is; a kind may bring a
+field of its own, as the three above do, and a field that does not apply is absent.
 
 ## Free and paid
 

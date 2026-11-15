@@ -23,7 +23,7 @@ claude mcp add --transport http ampdat-control https://control.ampdat.com/mcp
 ```
 
 Or, inside Claude Code, install the plugin from this repository. It adds both the server and the
-`check-vault-control` skill:
+`check-control` skill:
 
 ```
 /plugin marketplace add ampdat/control

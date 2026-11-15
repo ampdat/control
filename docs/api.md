@@ -18,9 +18,9 @@ before any payment is asked for.
 
 All routes are on `https://control.ampdat.com`. The OpenAPI document is at `/openapi.json`.
 
-An address that is not covered is a 404 with `{error, detail, address}`. If it is one of a
-coin's other contracts, the body also has `part_of`, the coin's address, and the free page
-redirects to the coin's.
+An address that is not covered is a 404 with `{error, detail, address}`. If it belongs to a
+covered contract that is answered at another address (today, one of a coin's other contracts),
+the body also has `part_of`, that address, and the free page redirects there.
 
 ## Records
 
@@ -48,3 +48,9 @@ Each answer names its schema by id. Fetch a schema from
 `GET /v1/coverage` says whether each schema version is frozen. Once a version is frozen, the only
 additions allowed are optional fields and new enum values, and no field's meaning changes. A
 breaking change becomes a new version, served beside the old one for a deprecation period.
+
+New families bring new enum values: a unit, a status, a kind of target or of graph node. Treat a
+value you do not know as opaque, and never read a number in an unknown unit as a plain quantity.
+The lending markets planned next (Aave v3, SparkLend, Compound v3) will add, among others, the
+status `proposed` for a change that is under vote and not yet queued, and records of kind
+`bundle` for a queued proposal or payload, with the records it made linked by `caused_by`.

@@ -26,11 +26,16 @@ and the coin the vault is denominated in, and each of those has an answer of its
 The `get_coverage` tool and `GET /v1/coverage` list every covered family, with how many contracts
 each has.
 
+Next are the lending markets: Aave v3, SparkLend and Compound v3. They are not covered yet, and
+an address of theirs answers as any uncovered address does. They will arrive in the same routes
+and the same schemas, with a market's governance (the vote, the timelock, the queued proposals)
+as a covered contract of its own.
+
 > **Status.** The MCP endpoints below go live with the service's next deploy. Until then,
 > `https://control.ampdat.com/mcp` does not answer. The web pages and the HTTP API are live.
 
 This repository holds the documentation, the MCP Registry metadata, and a Claude Code plugin with
-the `check-vault-control` skill. The service itself is operated by Ampdat LLC and is not open
+the `check-control` skill. The service itself is operated by Ampdat LLC and is not open
 source.
 
 ## Connect
@@ -85,7 +90,7 @@ charged: it returns the price and the HTTP URL that sells the same answer.
 
 ## The skill
 
-[`check-vault-control`](plugins/ampdat-control/skills/check-vault-control/SKILL.md) tells an
+[`check-control`](plugins/ampdat-control/skills/check-control/SKILL.md) tells an
 assistant to check who controls a Morpho vault before a deposit, without being asked. It also
 covers questions about who controls a stablecoin or a Safe. It tells the assistant how to report
 the answer, and what it must never say. It works alongside
