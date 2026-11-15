@@ -31,9 +31,6 @@ an address of theirs answers as any uncovered address does. They will arrive in 
 and the same schemas, with a market's governance (the vote, the timelock, the queued proposals)
 as a covered contract of its own.
 
-> **Status.** The MCP endpoints below go live with the service's next deploy. Until then,
-> `https://control.ampdat.com/mcp` does not answer. The web pages and the HTTP API are live.
-
 This repository holds the documentation, the MCP Registry metadata, and a Claude Code plugin with
 the `check-control` skill. The service itself is operated by Ampdat LLC and is not open
 source.
