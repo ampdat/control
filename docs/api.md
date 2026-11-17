@@ -10,7 +10,7 @@ before any payment is asked for.
 | `GET /ethereum/{address}` | a page for people: who holds each role and what that holder is, the notice each change gives, and what is pending and who can revoke it | free |
 | `GET /` | what is pending across every covered contract, and when it can take effect | free |
 | `GET /vaults` | every covered vault, then the coins and the Safes, each linked to its page | free |
-| `GET /v1/coverage` | the covered families; every situation id a record can carry, each with `recognised`; the schemas and whether they are frozen; an example address of each kind of contract | free |
+| `GET /v1/coverage` | the covered families; every situation id a record can carry, each with `recognised`; the schemas, whether they are frozen and which parts are still provisional; an example address of each kind of contract | free |
 | `GET /v1/schemas/{id}` | a published JSON schema (below) | free |
 | `GET /v1/ethereum/{address}` | the subject envelope: what the contract is, its state, who controls it, and its recent and pending records | paid |
 | `GET /v1/ethereum/{address}/records` | that contract's records, oldest first (query: `since`, `kind`, `observed_status`, `limit`, `cursor`) | paid |
@@ -20,7 +20,14 @@ All routes are on `https://control.ampdat.com`. The OpenAPI document is at `/ope
 
 An address that is not covered is a 404 with `{error, detail, address}`. If it belongs to a
 covered contract that is answered at another address (today, one of a coin's other contracts),
-the body also has `part_of`, that address, and the free page redirects there.
+the body also has `part_of`, that address, and the free page redirects there. Every error is
+`{error, detail}`. A malformed query is a 400, and so is a `family` that `/v1/coverage` does not
+list (families are builds: `safe-1.4.1`, not `safe`).
+
+Records pages are `{as_of, subject, records, next}`, oldest first; the last page has
+`next: null`. To follow the feed, ask again with `since` set to the block of the last record you
+hold and drop the ids you already have. A record above `as_of.finalised_block` can still be
+dropped by a reorg.
 
 ## Records
 
@@ -45,9 +52,14 @@ Each answer names its schema by id. Fetch a schema from
 | `state/stablecoin/v1` | A stablecoin's contracts, and who holds each capability on them |
 | `state/safe/v1` | A Safe's owners and threshold, modules, guards, fallback handler and singleton |
 
-`GET /v1/coverage` says whether each schema version is frozen. Once a version is frozen, the only
-additions allowed are optional fields and new enum values, and no field's meaning changes. A
-breaking change becomes a new version, served beside the old one for a deprecation period.
+v1 is frozen (`GET /v1/coverage` says `"frozen": true`). The only additions allowed are optional
+fields and new enum values, and no field's meaning changes. A breaking change becomes a new
+version, served beside the old one for a deprecation period. So ignore a field you do not know.
+A record's `id`, `situation.id` and `setting`, and a graph edge's `capability` and `role`, are
+never renamed.
+
+The freeze covers what the served families use. The parts of the schemas that none uses yet are
+listed under `provisional` in `GET /v1/coverage` and may still change until one does.
 
 New families bring new enum values: a unit, a status, a kind of target or of graph node. Treat a
 value you do not know as opaque, and never read a number in an unknown unit as a plain quantity.
