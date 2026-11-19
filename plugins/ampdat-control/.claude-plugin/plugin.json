@@ -4,7 +4,7 @@
   "description": "Who controls a DeFi vault (Morpho today), a Safe or a stablecoin, and what is about to change: role holders, timelocks and pending changes, read from Ethereum mainnet. A title search, not a rating.",
   "author": {
     "name": "Ampdat LLC",
-    "url": "https://www.ampdat.com"
+    "url": "https://control.ampdat.com"
   },
   "homepage": "https://control.ampdat.com",
   "keywords": [

@@ -25,7 +25,7 @@ arguments the assistant sends: an address, a search query, or filters.
 
 ## Support
 
-For questions, support, and privacy or refund requests, email info@ampdat.com. Formal notices go
+For questions, support, and privacy or refund requests, email control@ampdat.com. Formal notices go
 to the address in the terms of service at <https://control.ampdat.com/terms>.
 
 To report a wrong answer, send:
