@@ -11,7 +11,7 @@ differ, the terms win.
 - **What is logged for each request:**
   - the path and the response;
   - the time taken;
-  - the user agent;
+  - the user agent, or the name your client gives itself;
   - the paying or signed-in wallet address, and the settlement transaction, where there is one.
 - **The hosting provider** also records the connecting IP address.
 - **Use of the logs.** They are used to run, secure, price and improve the service, and are kept
