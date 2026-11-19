@@ -6,7 +6,7 @@ annotated `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`
 
 | Tool | Price | Input | Returns |
 | --- | --- | --- | --- |
-| `get_coverage` | free | optional `address` | the chain; the covered families, with a count for each; the total number of contracts; the block and time the data is at; example addresses; links. With `address`, it also says whether that address is covered, and by which family |
+| `get_coverage` | free | optional `address` | the chain; the covered families, with a count for each; the total number of contracts; the block and time the data is at; example addresses; links, including `method` (how answers are made). With `address`, it also says whether that address is covered, and by which family |
 | `search_covered_contracts` | free | `query`; optional `limit` (default 10, max 25) | covered contracts whose name, asset symbol, family or address contains every word of the query: vaults, coins and Safes (a Safe has no name, so find it by address). Each match has its address, name, asset, family and page link |
 | `get_control_state` | free | `address` | a one-paragraph `summary`. `roles`: each role, its holder, and what the holder is. `powers`: each capability, the roles that hold it, the notice it gives, and who can revoke it. `pending`: each queued change, when it can take effect, and who can revoke it. Also `as_of` (block and time) and the link to the free page. Three more fields appear where they apply; see "What each kind of contract returns" |
 | `get_control_evidence` | paid | `address`; optional `sections` (any of `state`, `control`, `records`) | the full answer for one contract, in the `subject/v1` shape. It is the same answer as `GET /v1/ethereum/{address}` |

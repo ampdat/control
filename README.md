@@ -35,6 +35,37 @@ This repository holds the documentation, the MCP Registry metadata, and a Claude
 the `check-control` skill. The service itself is operated by Ampdat LLC and is not open
 source.
 
+## How it's made
+
+Anyone can read a contract over RPC. What makes this an answer:
+
+- **Verified source.** A contract is covered only once its published source, recompiled, matches
+  the deployed bytecode exactly. Its roles and timelocks are read from that source, not from docs.
+- **From the chain.** Roles, timelocks and queued changes are derived from on-chain events and
+  state, not from anyone's summary or API. Every read is kept, so any answer can be traced back.
+- **Checked.** What is derived is checked against the contracts' own getters.
+- **Played forward.** Each family's derivation is tested on a fork of mainnet: the holders it
+  names can make the call and everyone else is refused, and a queued change fails one second
+  before the time it gives and goes through at that time.
+- **As of a block.** Data is refreshed every few minutes, and every answer gives the block it is
+  as of.
+
+### Check it yourself
+
+You don't have to take our word for it. Take the `as_of` block from an answer and read the same
+values from any Ethereum node at that block. For example, for a Morpho vault:
+
+```
+cast call <vault> "owner()(address)" --block <as_of block> --rpc-url <your node>
+cast call <vault> "curator()(address)" --block <as_of block> --rpc-url <your node>
+```
+
+Etherscan's Read Contract tab gives the current values. `get_control_evidence` gives the
+transaction and log behind each pending change, so a queued change can be checked on any block
+explorer.
+
+No independent party has reviewed the service yet. Reproducing answers is the way to check it.
+
 ## Connect
 
 The MCP server is remote: there is nothing to install, and no sign-in.
