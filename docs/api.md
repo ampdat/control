@@ -8,7 +8,7 @@ before any payment is asked for.
 | Route | Returns | Price |
 | --- | --- | --- |
 | `GET /ethereum/{address}` | a page for people: who holds each role and what that holder is, the notice each change gives, and what is pending and who can revoke it | free |
-| `GET /` | what is pending across every covered contract, and when it can take effect | free |
+| `GET /` | what is pending across every covered vault, and when it can take effect | free |
 | `GET /vaults` | every covered vault, then the coins, the lending markets with their governance, and the Safes, each linked to its page | free |
 | `GET /llms.txt` | what the service is and the free ways in, for an assistant | free |
 | `GET /v1/coverage` | the covered families; every situation id a record can carry, each with `recognised`; the schemas, whether they are frozen and which parts are still provisional; an example address of each kind of contract | free |

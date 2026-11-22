@@ -8,7 +8,7 @@ Ampdat Control reads Ethereum mainnet and answers, for every covered contract:
   governor and pause guardian; a coin's minters and freezers; a Safe's owners) and what that
   holder is: a single key, a Safe and its threshold, a DAO, or a known contract;
 - how much notice each kind of change gives (the timelock), and who can revoke it while it waits;
-- every change already queued, and when it can take effect.
+- the changes queued in the contracts it reads, and when each can take effect.
 
 Every answer is a fact read from the chain at a stated block. It is a title search, not a rating:
 it gives no safety score and no investment advice, and it never prepares, signs or sends a
@@ -19,7 +19,7 @@ Coverage is on Ethereum mainnet:
 - every Morpho vault (MetaMorpho v1.0 and v1.1, and Morpho Vaults V2);
 - Compound v3's six lending markets and the governance they share (the vote, the Timelock and
   its queue);
-- the Safes that hold those contracts' roles;
+- many of the Safes that hold those contracts' roles;
 - six stablecoins and their admin contracts: USDC, USDT, USDS, DAI, PYUSD and USD1.
 
 These are one picture, not four products. A vault's answer names the Safe that holds each role
@@ -41,17 +41,44 @@ source.
 
 Anyone can read a contract over RPC. What makes this an answer:
 
-- **Verified source.** A contract is covered only once its published source, recompiled, matches
-  the deployed bytecode exactly. Its roles and timelocks are read from that source, not from docs.
+- **Known code.** How a contract's code is identified depends on what it is:
+  - *Morpho vaults:* each version was recompiled from published source and matched to the
+    deployed bytecode, apart from values set in the constructor. A new vault is accepted because
+    that version's factory created it.
+  - *Compound v3:* each market's implementation must match a build recompiled the same way. The
+    proxies, factories and governance contracts are pinned by code hash, not recompiled.
+  - *Safes:* the proxy and the code it runs are each compared with recompiled builds.
+  - *Stablecoins:* the contracts and their implementations are pinned by code hash, not
+    recompiled. Their rules were read from source verified by others, such as Etherscan.
+
+  Covered does not always mean recognised code. A Safe with an unknown proxy, or a contract
+  upgraded to code not yet listed, is still served: its page says so.
 - **From the chain.** Roles, timelocks and queued changes are derived from on-chain events and
-  state, not from anyone's summary or API. Every read is kept, so any answer can be traced back.
-- **Checked.** What is derived is checked against the contracts' own getters.
-- **Played forward.** The derivation for Morpho's vaults and for Compound v3 is tested on a fork
-  of mainnet: the holders it names can make the call and everyone else is refused, and a queued
-  change fails one second before the time it gives and goes through at that time. The
-  stablecoins and Safes are not yet tested this way.
-- **As of a block.** Data is refreshed every few minutes, and every answer gives the block it is
-  as of.
+  state, not from anyone's summary or API. What each refresh reads is kept, so an answer can be
+  rebuilt.
+- **Checked.** What is derived is compared with the contracts' own getters. For Compound v3 and
+  the stablecoins, key values are compared at each refresh and any difference is in the answer.
+  For vaults and Safes, the comparison is made at audits.
+- **Played forward.** On a fork of mainnet, the main permissions and timelocks were tested for
+  Compound v3 and for samples of Morpho vaults: the holders named could make the call, the other
+  accounts tried were refused, and a queued change failed one second before the time given and
+  opened at it. The stablecoins and Safes are not yet tested this way.
+- **As of a block.** Events are read about every 10 minutes, and every answer gives the block it
+  is as of. What kind of account a holder is gets re-read less often, usually daily.
+
+### What it does not see
+
+- **Safes outside the list.** The covered Safes are a fixed list, found by surveying role
+  holders. A Safe given a role since then is named as a holder, and may have no answer of its own.
+- **Queues in other contracts.** Sky's governance queue (behind USDS and DAI), an issuer's
+  multisig submissions and the queues of some contracts that own vaults are not read. "Nothing
+  pending" means nothing in what is read.
+- **What logs nothing.** Some changes emit no event, such as a Safe changed by delegatecall or a
+  transfer of USDT's ownership. They are seen only when the value is next compared, and a change
+  undone before then is missed.
+- **What is off chain.** Signatures being collected, and who stands behind a key: an MPC wallet
+  looks like a single key.
+- **The end of the chain.** A holder whose rules are not followed is named and left unresolved.
 
 ### Check it yourself
 
@@ -107,7 +134,7 @@ More clients, including the Python SDK and MCP Inspector, are covered in
 | `get_coverage` | free | what is covered, and whether one address is |
 | `search_covered_contracts` | free | a covered contract's address from its name, asset symbol or part of its address |
 | `get_control_state` | free | who holds each role and what that holder is, the notice each change gives, and what is pending |
-| `get_control_evidence` | paid | the full evidence-backed answer: the whole control chain in one answer, exact caps and queues, and the transaction and log behind each pending change |
+| `get_control_evidence` | paid | the full evidence-backed answer: the control chain as far as it is followed, exact caps and queues, and the transaction and log behind each pending change |
 | `get_change_records` | paid | one contract's change history, or the feed across all covered contracts |
 
 The inputs, the outputs and how each tool behaves are in [docs/tools.md](docs/tools.md).

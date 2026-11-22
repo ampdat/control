@@ -12,7 +12,7 @@ before the terms change, and what is already queued. This is a title search, not
 report what the chain says and the user decides.
 
 The facts come from **Ampdat Control** (`https://control.ampdat.com`), which reads every Morpho
-vault on Ethereum mainnet, Compound v3's markets and their governance, the Safes that hold their
+vault on Ethereum mainnet, Compound v3's markets and their governance, many of the Safes that hold their
 roles, and six stablecoins' contracts,
 and answers deterministically, at a stated block. Its MCP server is
 `https://control.ampdat.com/mcp`.
@@ -67,7 +67,8 @@ Lead with the tool's `summary` sentence, then:
    rules are not followed: say "not known", never "no notice". Where a power has `by`, its
    holders wait differently: say who can act at once and who must wait.
 3. **What is already queued.** Each entry in `pending`: the change, when it can take effect
-   (`status`, and `can_take_effect_now`), and who can revoke it. If nothing is pending, say so.
+   (`status`, and `can_take_effect_now`), and who can revoke it. If nothing is pending, say that none is
+   pending in what Ampdat Control reads: it does not see every queue.
 4. **As of when.** Give `as_of.block` and `as_of.time`, and the `page` link so the user can
    read it themselves.
 
@@ -91,7 +92,7 @@ signs or sends anything itself. If the user changes their mind, stop.
 
 `get_control_state` says what each role holder is. The evidence behind it is the paid answer:
 
-- `get_control_evidence`: the whole control chain in one answer (each Safe's owners, modules
+- `get_control_evidence`: the control chain as far as it is followed (each Safe's owners, modules
   and guard, EIP-7702 delegates), the exact caps and queues, and for every pending change the
   transaction and log it rests on. Use it when the user wants to verify the answer, or is
   depositing an amount large enough to audit first.
