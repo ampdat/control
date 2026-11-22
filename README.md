@@ -4,9 +4,9 @@
 
 Ampdat Control reads Ethereum mainnet and answers, for every covered contract:
 
-- who holds each role (a vault's owner, curator, guardian and allocators; a coin's minters and
-  freezers; a Safe's owners) and what that holder is: a single key, a Safe and its threshold, a
-  DAO, or a known contract;
+- who holds each role (a vault's owner, curator, guardian and allocators; a lending market's
+  governor and pause guardian; a coin's minters and freezers; a Safe's owners) and what that
+  holder is: a single key, a Safe and its threshold, a DAO, or a known contract;
 - how much notice each kind of change gives (the timelock), and who can revoke it while it waits;
 - every change already queued, and when it can take effect.
 
@@ -17,19 +17,21 @@ transaction.
 Coverage is on Ethereum mainnet:
 
 - every Morpho vault (MetaMorpho v1.0 and v1.1, and Morpho Vaults V2);
-- the Safes that hold the vaults' roles;
+- Compound v3's six lending markets and the governance they share (the vote, the Timelock and
+  its queue);
+- the Safes that hold those contracts' roles;
 - six stablecoins and their admin contracts: USDC, USDT, USDS, DAI, PYUSD and USD1.
 
-These are one picture, not three products. A vault's answer names the Safe that holds each role
-and the coin the vault is denominated in, and each of those has an answer of its own.
+These are one picture, not four products. A vault's answer names the Safe that holds each role
+and the coin the vault is denominated in, a market's names its governance, its guardian Safe and
+the coins it holds, and each covered one has an answer of its own.
 
 The `get_coverage` tool and `GET /v1/coverage` list every covered family, with how many contracts
 each has.
 
-Next are the lending markets: Aave v3, SparkLend and Compound v3. They are not covered yet, and
-an address of theirs answers as any uncovered address does. They will arrive in the same routes
-and the same schemas, with a market's governance (the vote, the timelock, the queued proposals)
-as a covered contract of its own.
+Next are Aave v3 and SparkLend. They are not covered yet, and an address of theirs answers as
+any uncovered address does. They will arrive as Compound v3 did: in the same routes and the same
+schemas, with a market's governance as a covered contract of its own.
 
 This repository holds the documentation, the MCP Registry metadata, and a Claude Code plugin with
 the `check-control` skill. The service itself is operated by Ampdat LLC and is not open
@@ -44,9 +46,10 @@ Anyone can read a contract over RPC. What makes this an answer:
 - **From the chain.** Roles, timelocks and queued changes are derived from on-chain events and
   state, not from anyone's summary or API. Every read is kept, so any answer can be traced back.
 - **Checked.** What is derived is checked against the contracts' own getters.
-- **Played forward.** Each family's derivation is tested on a fork of mainnet: the holders it
-  names can make the call and everyone else is refused, and a queued change fails one second
-  before the time it gives and goes through at that time.
+- **Played forward.** The derivation for Morpho's vaults and for Compound v3 is tested on a fork
+  of mainnet: the holders it names can make the call and everyone else is refused, and a queued
+  change fails one second before the time it gives and goes through at that time. The
+  stablecoins and Safes are not yet tested this way.
 - **As of a block.** Data is refreshed every few minutes, and every answer gives the block it is
   as of.
 
@@ -119,7 +122,8 @@ charged: it returns the price and the HTTP URL that sells the same answer.
 ## The skill
 
 [`check-control`](plugins/ampdat-control/skills/check-control/SKILL.md) tells an
-assistant to check who controls a Morpho vault before a deposit, without being asked. It also
+assistant to check who controls a Morpho vault or a Compound v3 market before a deposit, without
+being asked. It also
 covers questions about who controls a stablecoin or a Safe. It tells the assistant how to report
 the answer, and what it must never say. It works alongside
 Morpho's own MCP server (`https://mcp.morpho.org/`).

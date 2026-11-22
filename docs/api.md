@@ -9,7 +9,8 @@ before any payment is asked for.
 | --- | --- | --- |
 | `GET /ethereum/{address}` | a page for people: who holds each role and what that holder is, the notice each change gives, and what is pending and who can revoke it | free |
 | `GET /` | what is pending across every covered contract, and when it can take effect | free |
-| `GET /vaults` | every covered vault, then the coins and the Safes, each linked to its page | free |
+| `GET /vaults` | every covered vault, then the coins, the lending markets with their governance, and the Safes, each linked to its page | free |
+| `GET /llms.txt` | what the service is and the free ways in, for an assistant | free |
 | `GET /v1/coverage` | the covered families; every situation id a record can carry, each with `recognised`; the schemas, whether they are frozen and which parts are still provisional; an example address of each kind of contract | free |
 | `GET /v1/schemas/{id}` | a published JSON schema (below) | free |
 | `GET /v1/ethereum/{address}` | the subject envelope: what the contract is, its state, who controls it, and its recent and pending records | paid |
@@ -19,7 +20,7 @@ before any payment is asked for.
 All routes are on `https://control.ampdat.com`. The OpenAPI document is at `/openapi.json`.
 
 An address that is not covered is a 404 with `{error, detail, address}`. If it belongs to a
-covered contract that is answered at another address (today, one of a coin's other contracts),
+covered contract that is answered at another address (one of a coin's other contracts, or one the lending markets share, such as the Governor),
 the body also has `part_of`, that address, and the free page redirects there. Every error is
 `{error, detail}`. A malformed query is a 400, and so is a `family` that `/v1/coverage` does not
 list (families are builds: `safe-1.4.1`, not `safe`).
@@ -50,6 +51,8 @@ Each answer names its schema by id. Fetch a schema from
 | `state/metamorpho/v1` | A MetaMorpho vault's terms |
 | `state/vaultv2/v1` | A Morpho Vaults V2 vault's terms |
 | `state/stablecoin/v1` | A stablecoin's contracts, and who holds each capability on them |
+| `state/compound/v1` | A Compound v3 market: what its running code was built with, what is staged, its pause flags and the calls queued for it |
+| `state/compound-governance/v1` | The governance the markets share: the Timelock and its queue, the Governor and its open proposals |
 | `state/safe/v1` | A Safe's owners and threshold, modules, guards, fallback handler and singleton |
 
 v1 is frozen (`GET /v1/coverage` says `"frozen": true`). The only additions allowed are optional
@@ -63,6 +66,10 @@ listed under `provisional` in `GET /v1/coverage` and may still change until one 
 
 New families bring new enum values: a unit, a status, a kind of target or of graph node. Treat a
 value you do not know as opaque, and never read a number in an unknown unit as a plain quantity.
-The lending markets planned next (Aave v3, SparkLend, Compound v3) will add, among others, the
-status `proposed` for a change that is under vote and not yet queued, and records of kind
-`bundle` for a queued proposal or payload, with the records it made linked by `caused_by`.
+Compound v3 brought, among others, the status `proposed` for a change that is under vote and not
+yet queued, and records of kind `bundle` for a proposal, with the records it made linked by
+`caused_by`. Aave v3 and SparkLend are planned next.
+
+A graph edge's `delay_s` is that edge's own delay. The notice a reader gets is the sum along the
+path behind it: a market's proxy admin has no delay of its own and is owned by a Timelock with
+two days, so an upgrade gives at least two days. Do not read one edge's 0 as "no notice".

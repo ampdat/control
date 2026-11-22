@@ -11,7 +11,7 @@
     {
       "name": "ampdat-control",
       "source": "./plugins/ampdat-control",
-      "description": "Who controls a DeFi vault (Morpho today), a Safe or a stablecoin, and what is about to change: the Ampdat Control MCP server and a skill that checks control before a deposit."
+      "description": "Who controls a Morpho vault, a Compound v3 market, a Safe or a stablecoin, and what is about to change: the Ampdat Control MCP server and a skill that checks control before a deposit."
     }
   ]
 }

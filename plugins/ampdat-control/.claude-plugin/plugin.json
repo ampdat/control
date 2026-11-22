@@ -1,7 +1,7 @@
 {
   "name": "ampdat-control",
-  "version": "1.1.0",
-  "description": "Who controls a DeFi vault (Morpho today), a Safe or a stablecoin, and what is about to change: role holders, timelocks and pending changes, read from Ethereum mainnet. A title search, not a rating.",
+  "version": "1.1.1",
+  "description": "Who controls a Morpho vault, a Compound v3 market, a Safe or a stablecoin, and what is about to change: role holders, timelocks and pending changes, read from Ethereum mainnet. A title search, not a rating.",
   "author": {
     "name": "Ampdat LLC",
     "url": "https://control.ampdat.com"
@@ -10,6 +10,8 @@
   "keywords": [
     "defi",
     "morpho",
+    "compound",
+    "lending",
     "vault",
     "stablecoin",
     "safe",

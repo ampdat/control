@@ -1,23 +1,26 @@
 ---
 name: check-control
-description: Check who controls a Morpho vault before depositing. Use when the user is about to deposit into, is considering, or already holds a Morpho vault (MetaMorpho v1.0 or v1.1, or Morpho Vaults V2) on Ethereum, or asks who controls, owns or curates a vault, who can change its terms, how long its timelock is, who can veto, or what changes are pending. Looks up the vault's role holders (a single key, a Safe and its threshold, a DAO), the notice each change gives and every queued change with Ampdat Control, and reports them as facts with the block they are as of. Also use it when the user asks who can mint, freeze, pause or upgrade a major stablecoin (USDC, USDT, USDS, DAI, PYUSD, USD1), or who controls a Safe that holds a vault role. A title search, not a rating - it never produces a safety score or investment advice.
+description: Check who controls a Morpho vault or a Compound v3 market before depositing. Use when the user is about to deposit into, supply to, is considering, or already holds a Morpho vault (MetaMorpho v1.0 or v1.1, or Morpho Vaults V2) or a Compound v3 (Comet) market on Ethereum, or asks who controls, owns, curates or governs one, who can change its terms, how long its timelock is, who can veto, or what changes are pending or under vote. Looks up the role holders (a single key, a Safe and its threshold, a DAO), the notice each change gives and every queued change with Ampdat Control, and reports them as facts with the block they are as of. Also use it when the user asks who can mint, freeze, pause or upgrade a major stablecoin (USDC, USDT, USDS, DAI, PYUSD, USD1), or who controls a Safe that holds one of those roles. A title search, not a rating - it never produces a safety score or investment advice.
 ---
 
-# Check who controls the vault before depositing
+# Check who controls it before depositing
 
 A vault's yield is set by people: an owner, a curator, allocators, and sometimes a guardian or
-sentinels who can veto. Before a user puts money in, tell them who those people are, how much
-warning the vault gives before its terms change, and what is already queued. This is a title
-search, not a rating: you report what the chain says and the user decides.
+sentinels who can veto. A Compound market's terms are set by a token vote, a Timelock and a
+guardian. Before a user puts money in, tell them who those are, how much warning they get
+before the terms change, and what is already queued. This is a title search, not a rating: you
+report what the chain says and the user decides.
 
 The facts come from **Ampdat Control** (`https://control.ampdat.com`), which reads every Morpho
-vault on Ethereum mainnet, the Safes that hold those vaults' roles, and six stablecoins' contracts,
+vault on Ethereum mainnet, Compound v3's markets and their governance, the Safes that hold their
+roles, and six stablecoins' contracts,
 and answers deterministically, at a stated block. Its MCP server is
 `https://control.ampdat.com/mcp`.
 
 ## When to run this
 
-- The user asks to deposit into a Morpho vault, or you are about to prepare a deposit for them.
+- The user asks to deposit into a Morpho vault or supply to a Compound v3 market, or you are
+  about to prepare that deposit for them.
   Run the check first, without being asked, and show the result before any transaction.
 - The user asks who controls, owns or curates a vault, whether its terms can change, what its
   timelock is, or what is pending.
@@ -59,7 +62,10 @@ Lead with the tool's `summary` sentence, then:
    lists each capability and the roles that hold it.
 2. **How much notice there is.** For each capability in `powers`, `notice` is how long a change
    waits before it can take effect and `revocable_by` is who can cancel it while it waits. Name
-   the changes that take effect with no notice.
+   the changes that take effect with no notice: only those whose `notice_s` is 0. `at least` is
+   a lower bound: say it that way. A `notice_s` of null is not known, because the holder's own
+   rules are not followed: say "not known", never "no notice". Where a power has `by`, its
+   holders wait differently: say who can act at once and who must wait.
 3. **What is already queued.** Each entry in `pending`: the change, when it can take effect
    (`status`, and `can_take_effect_now`), and who can revoke it. If nothing is pending, say so.
 4. **As of when.** Give `as_of.block` and `as_of.time`, and the `page` link so the user can
@@ -69,7 +75,7 @@ State these plainly when they are true, as facts and without a verdict:
 
 - a role is held by a single key, or by a Safe that one signer can move (1-of-n);
 - a Safe holding a role has modules, which can act without the signers;
-- the timelock is zero, or a capability has no notice;
+- the timelock is zero, or a capability has no notice (`notice_s` is 0, not null);
 - there is no guardian or sentinel, so nobody but the curator and owner can revoke a change;
 - a pending change can take effect now, or an ownership handover is waiting to be accepted;
 - a holder is not yet classified or not identified: say it is unknown, never guess.
@@ -101,9 +107,24 @@ agrees, use it on that URL. If you cannot pay, tell the user what the paid answe
 where it is, and do not guess at its contents.
 <!-- paid:end -->
 
+## Compound v3 markets
+
+Resolve a market with `search_covered_contracts` (for example "Compound USDC"), then call
+`get_control_state`. Compound on other chains is not covered. Read out:
+
+- **Notice.** An upgrade, a reserve withdrawal and a change of caps, rates or collateral
+  (`set_market_settings`) come from governance: a token vote, then at least the Timelock's
+  delay. The guardian Safe can pause at once.
+- **What is waiting.** `pending` is what is queued and can still run. `staged_not_live` is
+  settings that were changed and reach the market only at its next upgrade. `paused` is what is
+  switched off now.
+- **What is under vote.** Call `get_control_state` with the market's `governance` address:
+  `open_proposals` lists them. They are not queued yet and may fail, so keep them apart from
+  `pending`. A proposal whose `markets` is empty may still matter: say it names none of them.
+
 ## Stablecoins and Safes
 
-The same tools answer for two more kinds of contract. Read them out the same way, as facts:
+The same tools answer for these two kinds of contract. Read them out the same way, as facts:
 
 - **A stablecoin** (USDC, USDT, USDS, DAI, PYUSD or USD1). `roles` and `powers` say who can mint,
   burn, pause, freeze, upgrade the contract or appoint those roles, and what each holder is.
@@ -118,7 +139,7 @@ The same tools answer for two more kinds of contract. Read them out the same way
 - **To look behind a Safe for free,** call `get_control_state` with the Safe's address: a
   vault's answer names the Safe and its threshold, and the Safe's own answer names its owners.
 - `covered: false` with `part_of` means the address belongs to a covered contract that is
-  answered at another address (today, one of a coin's other contracts). Call
+  answered at another address (one of a coin's other contracts, or one Compound's markets share). Call
   `get_control_state` with the `part_of` address.
 - More kinds of contract will be added. If an answer has a `kind`, a role or a field this page
   does not describe, report it as given and do not guess at what it means.
