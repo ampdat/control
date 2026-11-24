@@ -1,6 +1,6 @@
 # Ampdat Control
 
-**Who controls a DeFi contract, and what is about to change.**
+**A title search for DeFi: deterministic control checks and audit trails before you—or your agent—deposit.**
 
 Ampdat Control reads Ethereum mainnet and answers, for every covered contract:
 
@@ -10,9 +10,10 @@ Ampdat Control reads Ethereum mainnet and answers, for every covered contract:
 - how much notice each kind of change gives (the timelock), and who can revoke it while it waits;
 - the changes queued in the contracts it reads, and when each can take effect.
 
-Every answer is a fact read from the chain at a stated block. It is a title search, not a rating:
-it gives no safety score and no investment advice, and it never prepares, signs or sends a
-transaction.
+Every answer is a deterministic fact read from the chain at a stated block, with no LLM in the
+runtime loop. Use it as a pre-deposit guardrail, a block-pinned audit receipt (`subject/v1`,
+`record/v1`), or a feed for custody drift while holding. Not a rating: it gives no safety score
+and no investment advice, and it never prepares, signs or sends a transaction.
 
 Coverage is on Ethereum mainnet:
 
@@ -53,9 +54,9 @@ Anyone can read a contract over RPC. What makes this an answer:
 
   Covered does not always mean recognised code. A Safe with an unknown proxy, or a contract
   upgraded to code not yet listed, is still served: its page says so.
-- **From the chain.** Roles, timelocks and queued changes are derived from on-chain events and
-  state, not from anyone's summary or API. What each refresh reads is kept, so an answer can be
-  rebuilt.
+- **From the chain.** No LLM in the runtime loop: roles, timelocks and queued changes are derived
+  by a deterministic state machine replayed from on-chain events and state, not from anyone's
+  summary or API. What each refresh reads is kept, so an answer can be rebuilt.
 - **Checked.** What is derived is compared with the contracts' own getters. For Compound v3 and
   the stablecoins, key values are compared at each refresh and any difference is in the answer.
   For vaults and Safes, the comparison is made at audits.
@@ -124,6 +125,11 @@ Or install the plugin, which adds both the server and the skill. Run these insid
 **ChatGPT (developer mode):** add a connector with the URL
 `https://control.ampdat.com/free/mcp` and "No authentication".
 
+**OpenClaw, Nous Hermes and other MCP / skill harnesses:** point your MCP client at
+`https://control.ampdat.com/mcp` (or `/free/mcp` for free tools only) and load the
+[`check-control`](plugins/ampdat-control/skills/check-control/SKILL.md) skill as a pre-deposit
+guardrail.
+
 More clients, including the Python SDK and MCP Inspector, are covered in
 [docs/connect.md](docs/connect.md).
 
@@ -139,25 +145,30 @@ More clients, including the Python SDK and MCP Inspector, are covered in
 
 The inputs, the outputs and how each tool behaves are in [docs/tools.md](docs/tools.md).
 
-## Paying
+## Paying & team access
 
-The two paid tools are paid per call in USDC on Base, using the
-[x402](https://www.x402.org/) protocol over MCP. If a call carries no payment, nothing is
-charged: it returns the price and the HTTP URL that sells the same answer.
+Current control state is free on the web and over MCP. The two paid tools (`get_control_evidence`
+and `get_change_records`) and the HTTP API (`subject/v1`, `record/v1`) are paid per call in USDC
+on Base using the [x402](https://www.x402.org/) protocol — no account required. If a call carries
+no payment, nothing is charged: it returns the price and the HTTP URL that sells the same answer.
 [docs/payments.md](docs/payments.md) explains how to pay from an assistant today.
+
+For API keys, watchlists, alert webhooks, or custom integrations (for allocators, risk teams,
+yield copilots and observability rails), email <info@ampdat.com>.
 
 ## The skill
 
 [`check-control`](plugins/ampdat-control/skills/check-control/SKILL.md) tells an
-assistant to check who controls a Morpho vault or a Compound v3 market before a deposit, without
-being asked. It also
+assistant or agent harness to check who controls a Morpho vault or a Compound v3 market before a
+deposit, without being asked. It also
 covers questions about who controls a stablecoin or a Safe. It tells the assistant how to report
 the answer, and what it must never say. It works alongside
 Morpho's own MCP server (`https://mcp.morpho.org/`).
 
-You can use it in either of these ways:
+You can use it in any of these ways:
 
-- Install the plugin above.
+- Install the plugin above (Claude Code).
+- Load [`plugins/ampdat-control/skills/check-control/SKILL.md`](plugins/ampdat-control/skills/check-control/SKILL.md) into OpenClaw, Nous Hermes, or any harness that supports `SKILL.md` skills.
 - Copy the skill's folder to `~/.claude/skills/`, or upload it as a skill in claude.ai.
 
 ## Also here

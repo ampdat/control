@@ -1,7 +1,7 @@
 {
   "name": "ampdat-control",
-  "version": "1.1.1",
-  "description": "Who controls a Morpho vault, a Compound v3 market, a Safe or a stablecoin, and what is about to change: role holders, timelocks and pending changes, read from Ethereum mainnet. A title search, not a rating.",
+  "version": "1.1.2",
+  "description": "A title search for DeFi: deterministic control checks and audit trails before you—or your agent—deposit. Role holders, timelocks and queued changes for Morpho vaults, Compound v3, Safes and six stablecoins on Ethereum. Not a rating.",
   "author": {
     "name": "Ampdat LLC",
     "url": "https://control.ampdat.com"

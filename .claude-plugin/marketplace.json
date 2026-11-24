@@ -5,13 +5,13 @@
     "url": "https://control.ampdat.com"
   },
   "metadata": {
-    "description": "Ampdat's plugins for Claude Code: Ampdat Control, who controls a DeFi contract and what is about to change."
+    "description": "Ampdat's plugins: Ampdat Control, a title search for DeFi — deterministic control checks and audit trails before you or your agent deposit."
   },
   "plugins": [
     {
       "name": "ampdat-control",
       "source": "./plugins/ampdat-control",
-      "description": "Who controls a Morpho vault, a Compound v3 market, a Safe or a stablecoin, and what is about to change: the Ampdat Control MCP server and a skill that checks control before a deposit."
+      "description": "A title search for DeFi: deterministic control checks and audit trails before you—or your agent—deposit. MCP server and pre-deposit skill for Morpho vaults, Compound v3, Safes and six stablecoins."
     }
   ]
 }
